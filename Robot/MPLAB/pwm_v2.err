@@ -1,0 +1,19 @@
+Warning[205] C:\USERS\ADMINISTRATOR\DOCUMENTS\GITHUB\BOTDROID\ROBOT\MPLAB\PWM_V2.ASM 4 : Found directive in column 1. (__CONFIG)
+Warning[205] C:\USERS\ADMINISTRATOR\DOCUMENTS\GITHUB\BOTDROID\ROBOT\MPLAB\PWM_V2.ASM 9 : Found directive in column 1. (cblock)
+Warning[205] C:\USERS\ADMINISTRATOR\DOCUMENTS\GITHUB\BOTDROID\ROBOT\MPLAB\PWM_V2.ASM 55 : Found directive in column 1. (ENDC)
+Message[302] C:\USERS\ADMINISTRATOR\DOCUMENTS\GITHUB\BOTDROID\ROBOT\MPLAB\PWM_V2.ASM 75 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\ADMINISTRATOR\DOCUMENTS\GITHUB\BOTDROID\ROBOT\MPLAB\PWM_V2.ASM 93 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\ADMINISTRATOR\DOCUMENTS\GITHUB\BOTDROID\ROBOT\MPLAB\PWM_V2.ASM 99 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\ADMINISTRATOR\DOCUMENTS\GITHUB\BOTDROID\ROBOT\MPLAB\PWM_V2.ASM 144 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\ADMINISTRATOR\DOCUMENTS\GITHUB\BOTDROID\ROBOT\MPLAB\PWM_V2.ASM 145 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[305] C:\USERS\ADMINISTRATOR\DOCUMENTS\GITHUB\BOTDROID\ROBOT\MPLAB\PWM_V2.ASM 214 : Using default destination of 1 (file).
+Message[302] C:\USERS\ADMINISTRATOR\DOCUMENTS\GITHUB\BOTDROID\ROBOT\MPLAB\PWM_V2.ASM 403 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\ADMINISTRATOR\DOCUMENTS\GITHUB\BOTDROID\ROBOT\MPLAB\PWM_V2.ASM 404 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\ADMINISTRATOR\DOCUMENTS\GITHUB\BOTDROID\ROBOT\MPLAB\PWM_V2.ASM 405 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\ADMINISTRATOR\DOCUMENTS\GITHUB\BOTDROID\ROBOT\MPLAB\PWM_V2.ASM 412 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\ADMINISTRATOR\DOCUMENTS\GITHUB\BOTDROID\ROBOT\MPLAB\PWM_V2.ASM 422 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\ADMINISTRATOR\DOCUMENTS\GITHUB\BOTDROID\ROBOT\MPLAB\PWM_V2.ASM 423 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\ADMINISTRATOR\DOCUMENTS\GITHUB\BOTDROID\ROBOT\MPLAB\PWM_V2.ASM 483 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\ADMINISTRATOR\DOCUMENTS\GITHUB\BOTDROID\ROBOT\MPLAB\PWM_V2.ASM 484 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\ADMINISTRATOR\DOCUMENTS\GITHUB\BOTDROID\ROBOT\MPLAB\PWM_V2.ASM 485 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Error[173]   C:\USERS\ADMINISTRATOR\DOCUMENTS\GITHUB\BOTDROID\ROBOT\MPLAB\PWM_V2.ASM 539 : Source file path exceeds 62 characters (C:\USERS\ADMINISTRATOR\DOCUMENTS\GITHUB\BOTDROID\ROBOT\MPLAB\PWM_V2.ASM)

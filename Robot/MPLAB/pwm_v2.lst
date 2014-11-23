@@ -1,0 +1,1145 @@
+MPASM  5.02                        PWM_V2.ASM   11-22-2014  20:26:28         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001                         list            p = 16F877A
+                      00002                         #include        <P16F877A.INC>
+                      00001         LIST
+                      00002 ; P16F877A.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.
+                      00400         LIST
+                      00003 
+Warning[205]: Found directive in column 1. (__CONFIG)
+2007   3FF2           00004 __CONFIG        _CP_OFF&_WDT_OFF&_PWRTE_ON&_HS_OSC
+                      00005 
+                      00006 #define         BANCO0  bcf               STATUS, RP0
+                      00007 #define         BANCO1  bsf               STATUS, RP0
+                      00008 
+Warning[205]: Found directive in column 1. (cblock)
+                      00009 cblock          20h
+  00000020            00010                         C_PERIODO_PWM                                   ; Indica el periodo de la señal 
+                            PWM
+  00000021            00011                         C_ANCHO_PWM                                             ; Indica el ancho PWM pr
+                            ogramado en alto
+  00000022            00012                         C_CICLO_PWM                                             ; Indica el ciclo PWM ac
+                            tual
+  00000023            00013                         C_TMR1H                                                 ; Byte de mayor peso de 
+                            TMR1
+  00000024            00014                         C_TMR1L                                                 ; Byte de menor peso de 
+                            TMR1
+  00000025            00015                         C_CCP1H                                                 ; Byte de mayor peso de 
+                            CCP1
+  00000026            00016                         C_CCP1L                                                 ; Byte de menor peso de 
+                            CCP1
+  00000027            00017                         C_CCP2H                                                 ; Byte de mayor peso de 
+                            CCP2
+  00000028            00018                         C_CCP2L                                                 ; Byte de menor peso de 
+                            CCP2
+  00000029            00019                         RX_INICIADA                                             ; Indica el estado de la
+                             recepcion
+  0000002A            00020                         RX_TEMP
+  0000002B            00021                         RX_COM4                                                 ; Byte de peso 4 de coma
+                            ndo recibido
+  0000002C            00022                         RX_COM3                                                 ; Byte de peso 3 de coma
+                            ndo recibido
+  0000002D            00023                         RX_COM2                                                 ; Byte de peso 2 de coma
+                            ndo recibido
+  0000002E            00024                         RX_COM1                                                 ; Byte de peso 1 de coma
+                            ndo recibido
+  0000002F            00025                         RX_COM0                                                 ; Byte de peso 0 de coma
+                            ndo recibido
+  00000030            00026                         CCP1H_MAX                                               ; Byte de mayor peso de 
+                            valor maximo de CCP1
+  00000031            00027                         CCP1L_MIN                                               ; Byte de menor peso de 
+                            valor maximo de CCP1
+  00000032            00028                         CCP2H_MAX                                               ; Byte de mayor peso de 
+                            valor maximo de CCP2
+  00000033            00029                         CCP2L_MIN                                               ; Byte de menor peso de 
+                            valor maximo de CCP2
+MPASM  5.02                        PWM_V2.ASM   11-22-2014  20:26:28         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+  00000034            00030                         DATO1_1H                                                ; Byte de mayor peso de 
+                            entrada 1 de operaciones aritmeticas
+  00000035            00031                         DATO1_1L                                                ; Byte de menor peso de 
+                            entrada 1 de operaciones aritmeticas
+  00000036            00032                         DATO2_1H                                                ; Byte de mayor peso de 
+                            entrada 2 de operaciones aritmeticas
+  00000037            00033                         DATO2_1L                                                ; Byte de menor peso de 
+                            entrada 2 de operaciones aritmeticas
+  00000038            00034                         RESP1H                                                  ; Byte de mayor peso de 
+                            resultado de operaciones aritmeticas
+  00000039            00035                         RESP1L                                                  ; Byte de menor peso de 
+                            resultado de operaciones aritmeticas
+  0000003A            00036                         C_BASE_PWM_H                                    ; Base de configuracion PWM
+  0000003B            00037                         C_BASE_PWM_L                                    ; Base de configuracion PWM
+  0000003C            00038                         C_INI_PWM1_H                                    ; Valor inicial de posicion de m
+                            otor 1
+  0000003D            00039                         C_INI_PWM1_L                                    ; Valor inicial de posicion de m
+                            otor 1
+  0000003E            00040                         C_INI_PWM2_H                                    ; Valor inicial de posicion de m
+                            otor 2
+  0000003F            00041                         C_INI_PWM2_L                                    ; Valor inicial de posicion de m
+                            otor 2
+  00000040            00042                         TX_INICIADA                                             ; Indica el estado de la
+                             transmision
+  00000041            00043                         TX_TEMP
+  00000042            00044                         TX_COM4                                                 ; Byte de peso 4 de coma
+                            ndo a transmitir
+  00000043            00045                         TX_COM3                                                 ; Byte de peso 3 de coma
+                            ndo a transmitir
+  00000044            00046                         TX_COM2                                                 ; Byte de peso 2 de coma
+                            ndo a transmitir
+  00000045            00047                         TX_COM1                                                 ; Byte de peso 1 de coma
+                            ndo a transmitir
+  00000046            00048                         TX_COM0                                                 ; Byte de peso 0 de coma
+                            ndo a transmitir
+  00000047            00049                         C_VLRMIN_CCP1_H                                 ; Byte de mayor peso de posicion
+                             maxima parametrizada del motor 1
+  00000048            00050                         C_VLRMIN_CCP1_L                                 ; Byte de menorpeso de posicion 
+                            maxima parametrizada del motor 1
+  00000049            00051                         C_VLRMIN_CCP2_H                                 ; Byte de mayor peso de posicion
+                             maxima parametrizada del motor 2
+  0000004A            00052                         C_VLRMIN_CCP2_L                                 ; Byte de menorpeso de posicion 
+                            maxima parametrizada del motor 2
+  0000004B            00053                         C_VLRMIN_H
+  0000004C            00054                         C_VLRMIN_L
+Warning[205]: Found directive in column 1. (ENDC)
+                      00055 endc
+                      00056 
+0000                  00057                         org 00h
+0000   211E           00058                         call INICIO
+0001   0000           00059                         nop
+                      00060 
+0004                  00061                         org 04h
+MPASM  5.02                        PWM_V2.ASM   11-22-2014  20:26:28         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0004   180C           00062                         btfsc           PIR1, TMR1IF
+0005   2119           00063                         call            INT_TMR1
+0006   190C           00064                         btfsc           PIR1, CCP1IF
+0007   2116           00065                         call            INT_CCP1
+0008   180D           00066                         btfsc           PIR2, CCP2IF
+0009   2113           00067                         call            INT_CCP2
+000A   1A0C           00068                         btfsc           PIR1, TXIF
+000B   200F           00069                         call            INT_TX
+000C   1A8C           00070                         btfsc           PIR1, RCIF
+000D   202A           00071                         call            INT_RX
+000E   0009           00072 RET_INT         retfie
+                      00073 
+000F   1683           00074 INT_TX          BANCO1
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0010   080C           00075                         movf            PIE1, W
+0011   1283           00076                         BANCO0
+0012   00C1           00077                         movwf           TX_TEMP
+0013   1E41           00078                         btfss           TX_TEMP, 4                      ; La interrupcion por transmisio
+                            n serial esta habilitada?
+0014   281F           00079                         goto            RET_PROC_TX                     ; No, retornar
+0015   3006           00080                         movlw           06h                                     ; Si, continuar
+0016   0640           00081                         xorwf           TX_INICIADA, W
+0017   1903           00082                         btfsc           STATUS, Z                       ; La transmision ya fué terminad
+                            a previamente?
+0018   2820           00083                         goto            DES_TX                          ; Si, evaluar si el buffer de TX
+                             esta vacio
+0019   0AC0           00084                         incf            TX_INICIADA, F
+001A   3006           00085                         movlw           06h
+001B   0640           00086                         xorwf           TX_INICIADA, W
+001C   1903           00087                         btfsc           STATUS, Z
+001D   2820           00088                         goto            DES_TX                          ; Rutina de deshabilitacion de t
+                            ransmision
+001E   2053           00089                         call            REG_TX
+001F   0008           00090 RET_PROC_TX     return
+                      00091 
+0020   1683           00092 DES_TX          BANCO1
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0021   0818           00093                         movf            TXSTA, W
+0022   1283           00094                         BANCO0
+0023   00C1           00095                         movwf           TX_TEMP
+0024   18C1           00096                         btfsc           TX_TEMP, 1                      ; La transmision actual ya se te
+                            rminó?
+0025   281F           00097                         goto            RET_PROC_TX                     ; No, retornar
+0026   1683           00098                         BANCO1
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0027   1298           00099                         bcf                     TXSTA, TXEN
+0028   1283           00100                         BANCO0
+0029   281F           00101                         goto            RET_PROC_TX
+                      00102 
+002A   081A           00103 INT_RX          movfw           RCREG
+002B   00AA           00104                         movwf           RX_TEMP
+002C   202E           00105                         call            PROC_RX
+002D   0008           00106                         return
+MPASM  5.02                        PWM_V2.ASM   11-22-2014  20:26:28         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00107 
+002E   08A9           00108 PROC_RX         movf            RX_INICIADA, F
+002F   1903           00109                         btfsc           STATUS, Z
+0030   2833           00110                         goto            NUEVA_RX
+0031   2837           00111                         goto            CONT_RX
+0032   0008           00112 RET_PROC_RX     return
+                      00113 
+0033   3055           00114 NUEVA_RX        movlw           55h
+0034   062A           00115                         xorwf           RX_TEMP, W
+0035   1D03           00116                         btfss           STATUS, Z
+0036   2842           00117                         goto            RESP_ERR_RX                     ; Respuesta erronea por transmis
+                            ion
+0037   302B           00118 CONT_RX         movlw           2Bh
+0038   0729           00119                         addwf           RX_INICIADA, W
+0039   0084           00120                         movwf           FSR
+003A   082A           00121                         movf            RX_TEMP, W
+003B   0080           00122                         movwf           INDF
+003C   0AA9           00123                         incf            RX_INICIADA, F
+003D   0829           00124                         movf            RX_INICIADA, W
+003E   3A05           00125                         xorlw           05h
+003F   1903           00126                         btfsc           STATUS, Z                       ; Trama completa?
+0040   2859           00127                         goto            EJEC_RX                         ; Si
+0041   2832           00128                         goto            RET_PROC_RX                     ; No
+                      00129 
+0042   3055           00130 RESP_ERR_RX     movlw           55h
+0043   00C2           00131                         movwf           TX_COM4
+0044   3002           00132                         movlw           02h
+0045   00C3           00133                         movwf           TX_COM3
+0046   01C4           00134                         clrf            TX_COM2
+0047   01C5           00135                         clrf            TX_COM1
+0048   01C6           00136                         clrf            TX_COM0
+0049   204B           00137                         call            CONF_TX
+004A   2832           00138                         goto            RET_PROC_RX
+                      00139 
+004B   3000           00140 CONF_TX         movlw           00h
+004C   00C0           00141                         movwf           TX_INICIADA
+004D   2053           00142                         call            REG_TX                          ; Mover primer registro a transm
+                            itir
+004E   1683           00143                         BANCO1
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+004F   1698           00144                         bsf                     TXSTA, TXEN
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0050   160C           00145                         bsf                     PIE1, TXIE
+0051   1283           00146                         BANCO0
+0052   0008           00147                         return
+                      00148 
+0053   3042           00149 REG_TX          movlw           42h                                     ; Transfiere el registro de envi
+                            o para su transmision serial
+0054   0740           00150                         addwf           TX_INICIADA, W
+0055   0084           00151                         movwf           FSR
+0056   0800           00152                         movf            INDF, W
+0057   0099           00153                         movwf           TXREG
+0058   0008           00154                         return
+MPASM  5.02                        PWM_V2.ASM   11-22-2014  20:26:28         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00155 
+0059   01A9           00156 EJEC_RX         clrf            RX_INICIADA                     ; Reiniciar variable
+005A   120A           00157                         bcf                     PCLATH, 4
+005B   118A           00158                         bcf                     PCLATH, 3
+005C   032C           00159                         decf            RX_COM3, W
+005D   0782           00160                         addwf           PCL, F                          ; Menu de comandos recibidos
+005E   28BD           00161                         goto            CMDO_1                          ; Comando 1, cambiar valor de CC
+                            P1
+005F   2897           00162                         goto            CMDO_2                          ; Comando 2, solicitud de posici
+                            on de motor
+0060   288A           00163                         goto            CMDO_3                          ; Comando 3, solicitud de reinic
+                            io
+0061   2862           00164                         goto            CMDO_4                          ; Comando 4, calibracion de posi
+                            cion de motor
+                      00165 
+0062   032D           00166 CMDO_4          decf            RX_COM2, W
+0063   0782           00167                         addwf           PCL, F
+0064   2866           00168                         goto            LIM_MOTOR1                      ; Calibracion de motor 1
+0065   2878           00169                         goto            LIM_MOTOR2                      ; Calibracion de motor 2
+                      00170 
+0066   082E           00171 LIM_MOTOR1      movf            RX_COM1, W
+0067   00C7           00172                         movwf           C_VLRMIN_CCP1_H
+0068   082F           00173                         movf            RX_COM0, W
+0069   00C8           00174                         movwf           C_VLRMIN_CCP1_L
+006A   2157           00175                         call            VLR_INI_CCP1
+006B   2173           00176                         call            SET_CCP1
+006C   2165           00177                         call            VLR_INI_CCP2
+006D   2178           00178                         call            SET_CCP2
+006E   3055           00179                         movlw           55h
+006F   00C2           00180                         movwf           TX_COM4
+0070   3001           00181                         movlw           01h
+0071   00C3           00182                         movwf           TX_COM3
+0072   082D           00183                         movf            RX_COM2, W
+0073   00C4           00184                         movwf           TX_COM2
+0074   01C5           00185                         clrf            TX_COM1
+0075   01C6           00186                         clrf            TX_COM0
+0076   204B           00187                         call            CONF_TX
+0077   2832           00188                         goto            RET_PROC_RX
+                      00189 
+0078   082E           00190 LIM_MOTOR2      movf            RX_COM1, W
+0079   00C9           00191                         movwf           C_VLRMIN_CCP2_H
+007A   082F           00192                         movf            RX_COM0, W
+007B   00CA           00193                         movwf           C_VLRMIN_CCP2_L
+007C   2157           00194                         call            VLR_INI_CCP1
+007D   2173           00195                         call            SET_CCP1
+007E   2165           00196                         call            VLR_INI_CCP2
+007F   2178           00197                         call            SET_CCP2
+0080   3055           00198                         movlw           55h
+0081   00C2           00199                         movwf           TX_COM4
+0082   3001           00200                         movlw           01h
+0083   00C3           00201                         movwf           TX_COM3
+0084   082D           00202                         movf            RX_COM2, W
+0085   00C4           00203                         movwf           TX_COM2
+MPASM  5.02                        PWM_V2.ASM   11-22-2014  20:26:28         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0086   01C5           00204                         clrf            TX_COM1
+0087   01C6           00205                         clrf            TX_COM0
+0088   204B           00206                         call            CONF_TX
+0089   2832           00207                         goto            RET_PROC_RX
+                      00208                         
+008A   2157           00209 CMDO_3          call            VLR_INI_CCP1
+008B   2173           00210                         call            SET_CCP1
+008C   2165           00211                         call            VLR_INI_CCP2
+008D   2178           00212                         call            SET_CCP2
+008E   3055           00213                         movlw           55h
+Message[305]: Using default destination of 1 (file).
+008F   08C2           00214                         movf            TX_COM4
+0090   3001           00215                         movlw           01h
+0091   00C3           00216                         movwf           TX_COM3
+0092   01C4           00217                         clrf            TX_COM2
+0093   01C5           00218                         clrf            TX_COM1
+0094   01C6           00219                         clrf            TX_COM0
+0095   204B           00220                         call            CONF_TX
+0096   2832           00221                         goto            RET_PROC_RX
+                      00222 
+0097   032D           00223 CMDO_2          decf            RX_COM2, W
+0098   0782           00224                         addwf           PCL, F                          ; Menu de seleccion de motor
+0099   289B           00225                         goto            POS_MOTOR1                      ; Motor 1
+009A   28B2           00226                         goto            POS_MOTOR2                      ; Motor 2
+                      00227 
+009B   0825           00228 POS_MOTOR1      movf            C_CCP1H, W                      ; Calcular el valor del ancho de pulso e
+                            n relacion con la cifra base parametrizada
+009C   00B4           00229                         movwf           DATO1_1H
+009D   0826           00230                         movf            C_CCP1L, W
+009E   00B5           00231                         movwf           DATO1_1L
+009F   083A           00232                         movf            C_BASE_PWM_H, W
+00A0   00B6           00233                         movwf           DATO2_1H
+00A1   083B           00234                         movf            C_BASE_PWM_L, W
+00A2   00B7           00235                         movwf           DATO2_1L
+00A3   21A1           00236                         call            RESTA16                         ; Restar la cifra base de contro
+                            l PWM del valor parametrizado para el ancho de pulso
+00A4   20A6           00237                         call            RESP_POS                        ; Enviar respuesta de posicion
+00A5   2832           00238                         goto            RET_PROC_RX
+                      00239 
+00A6   3055           00240 RESP_POS        movlw           55h
+00A7   00C2           00241                         movwf           TX_COM4
+00A8   3001           00242                         movlw           01h
+00A9   00C3           00243                         movwf           TX_COM3
+00AA   082D           00244                         movf            RX_COM2, W
+00AB   00C4           00245                         movwf           TX_COM2
+00AC   0838           00246                         movf            RESP1H, W
+00AD   00C5           00247                         movwf           TX_COM1
+00AE   0839           00248                         movf            RESP1L, W
+00AF   00C6           00249                         movwf           TX_COM0
+00B0   204B           00250                         call            CONF_TX
+00B1   0008           00251                         return
+                      00252 
+00B2   0827           00253 POS_MOTOR2      movf            C_CCP2H, W                      ; Calcular el valor del ancho de pulso e
+MPASM  5.02                        PWM_V2.ASM   11-22-2014  20:26:28         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                            n relacion con la cifra base parametrizada
+00B3   00B4           00254                         movwf           DATO1_1H
+00B4   0828           00255                         movf            C_CCP2L, W
+00B5   00B5           00256                         movwf           DATO1_1L
+00B6   083A           00257                         movf            C_BASE_PWM_H, W
+00B7   00B6           00258                         movwf           DATO2_1H
+00B8   083B           00259                         movf            C_BASE_PWM_L, W
+00B9   00B7           00260                         movwf           DATO2_1L
+00BA   21A1           00261                         call            RESTA16                         ; Restar la cifra base de contro
+                            l PWM del valor parametrizado para el ancho de pulso
+00BB   20A6           00262                         call            RESP_POS                        ; Enviar respuesta de posicion
+00BC   2832           00263                         goto            RET_PROC_RX
+                      00264 
+00BD   032D           00265 CMDO_1          decf            RX_COM2, W
+00BE   0782           00266                         addwf           PCL, F                          ; Menu de seleccion de motor
+00BF   28C1           00267                         goto            CMB_CCP1                        ; Motor 1, cambiar ancho de puls
+                            o
+00C0   28FB           00268                         goto            CMB_CCP2                        ; Motor 2, cambiar ancho de puls
+                            o
+                      00269 
+00C1   0847           00270 CMB_CCP1        movf            C_VLRMIN_CCP1_H, W
+00C2   00CB           00271                         movwf           C_VLRMIN_H
+00C3   0848           00272                         movf            C_VLRMIN_CCP1_L, W
+00C4   00CC           00273                         movwf           C_VLRMIN_L
+00C5   20E3           00274                         call            VER_LIM
+00C6   3A00           00275                         xorlw           00h                                     ; Valor invalido de posi
+                            cion?
+00C7   1903           00276                         btfsc           STATUS, Z
+00C8   28D9           00277                         goto            RES_ERR_POS
+00C9   083A           00278                         movf            C_BASE_PWM_H, W
+00CA   00B4           00279                         movwf           DATO1_1H
+00CB   083B           00280                         movf            C_BASE_PWM_L, W
+00CC   00B5           00281                         movwf           DATO1_1L
+00CD   082E           00282                         movf            RX_COM1, W
+00CE   00B6           00283                         movwf           DATO2_1H
+00CF   082F           00284                         movf            RX_COM0, W
+00D0   00B7           00285                         movwf           DATO2_1L
+00D1   2196           00286                         call            SUMA16                          ; Sumar la cifra base de control
+                             PWM al valor recibido por el comando
+00D2   0838           00287                         movf            RESP1H, W
+00D3   00A5           00288                         movwf           C_CCP1H
+00D4   0839           00289                         movf            RESP1L, W
+00D5   00A6           00290                         movwf           C_CCP1L
+00D6   2173           00291                         call            SET_CCP1
+00D7   20EF           00292                         call            ACK_CMD1
+00D8   2832           00293                         goto            RET_PROC_RX
+                      00294 
+00D9   3055           00295 RES_ERR_POS     movlw           55h
+00DA   00C2           00296                         movwf           TX_COM4
+00DB   3002           00297                         movlw           02h
+00DC   00C3           00298                         movwf           TX_COM3
+00DD   082D           00299                         movf            RX_COM2, W
+00DE   00C4           00300                         movwf           TX_COM2
+MPASM  5.02                        PWM_V2.ASM   11-22-2014  20:26:28         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00DF   01C5           00301                         clrf            TX_COM1
+00E0   01C6           00302                         clrf            TX_COM0
+00E1   204B           00303                         call            CONF_TX
+00E2   2832           00304                         goto            RET_PROC_RX
+                      00305 
+00E3   084B           00306 VER_LIM         movf            C_VLRMIN_H, W
+00E4   00B4           00307                         movwf           DATO1_1H
+00E5   084C           00308                         movf            C_VLRMIN_L, W
+00E6   00B5           00309                         movwf           DATO1_1L
+00E7   082E           00310                         movf            RX_COM1, W
+00E8   00B6           00311                         movwf           DATO2_1H
+00E9   082F           00312                         movf            RX_COM0, W
+00EA   00B7           00313                         movwf           DATO2_1L
+00EB   21A1           00314                         call            RESTA16
+00EC   1803           00315                         btfsc           STATUS, C                       ; Resultado negativo?
+00ED   3401           00316                         retlw           01h                                     ; No, indicar
+00EE   3400           00317                         retlw           00h                                     ; Si, indicar
+                      00318 
+00EF   3055           00319 ACK_CMD1        movlw           55h                                     ; Armar la respuesta afirmativa
+00F0   00C2           00320                         movwf           TX_COM4
+00F1   3001           00321                         movlw           01h
+00F2   00C3           00322                         movwf           TX_COM3
+00F3   082D           00323                         movf            RX_COM2, W
+00F4   00C4           00324                         movwf           TX_COM2
+00F5   082E           00325                         movf            RX_COM1, W
+00F6   00C5           00326                         movwf           TX_COM1
+00F7   082F           00327                         movf            RX_COM0, W
+00F8   00C6           00328                         movwf           TX_COM0
+00F9   204B           00329                         call            CONF_TX                         ; Configurar el envio de la resp
+                            uesta
+00FA   0008           00330                         return
+                      00331 
+00FB   0849           00332 CMB_CCP2        movf            C_VLRMIN_CCP2_H, W
+00FC   00CB           00333                         movwf           C_VLRMIN_H
+00FD   084A           00334                         movf            C_VLRMIN_CCP2_L, W
+00FE   00CC           00335                         movwf           C_VLRMIN_L
+00FF   20E3           00336                         call            VER_LIM
+0100   3A00           00337                         xorlw           00h                                     ; Valor invalido de posi
+                            cion?
+0101   1903           00338                         btfsc           STATUS, Z
+0102   28D9           00339                         goto            RES_ERR_POS
+0103   083A           00340                         movf            C_BASE_PWM_H, W
+0104   00B4           00341                         movwf           DATO1_1H
+0105   083B           00342                         movf            C_BASE_PWM_L, W
+0106   00B5           00343                         movwf           DATO1_1L
+0107   082E           00344                         movf            RX_COM1, W
+0108   00B6           00345                         movwf           DATO2_1H
+0109   082F           00346                         movf            RX_COM0, W
+010A   00B7           00347                         movwf           DATO2_1L
+010B   2196           00348                         call            SUMA16                          ; Sumar la cifra base de control
+                             PWM al valor recibido por el comando
+010C   0838           00349                         movf            RESP1H, W
+010D   00A7           00350                         movwf           C_CCP2H
+MPASM  5.02                        PWM_V2.ASM   11-22-2014  20:26:28         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+010E   0839           00351                         movf            RESP1L, W
+010F   00A8           00352                         movwf           C_CCP2L
+0110   2178           00353                         call            SET_CCP2
+0111   20EF           00354                         call            ACK_CMD1
+0112   2832           00355                         goto            RET_PROC_RX
+                      00356 
+0113   1086           00357 INT_CCP2        bcf                     PORTB, 1
+0114   100D           00358                         bcf                     PIR2, CCP2IF
+0115   0008           00359                         return
+                      00360 
+0116   1006           00361 INT_CCP1        bcf                     PORTB, 0
+0117   110C           00362                         bcf                     PIR1, CCP1IF
+0118   0008           00363                         return
+                      00364 
+0119   218F           00365 INT_TMR1        call            SET_TMR1
+011A   100C           00366                         bcf                     PIR1, TMR1IF
+011B   3003           00367                         movlw           b'00000011'
+011C   0086           00368                         movwf           PORTB
+011D   0008           00369                         return
+                      00370 
+011E   2124           00371 INICIO          call            CONF_CONST
+011F   2139           00372                         call            CONF_RX
+0120   2149           00373                         call            CFG_CCP
+0121   217D           00374                         call            CFG_TMR1
+0122   178B           00375                         bsf                     INTCON, GIE                     ; Habilitar las interrup
+                            ciones
+0123   2194           00376                         call            CICLO
+                      00377 
+0124   30DC           00378 CONF_CONST      movlw           0DCh                            ; Configuracion inicial de constantes - 
+                            0DCh
+0125   00BA           00379                         movwf           C_BASE_PWM_H
+0126   30D5           00380                         movlw           0D5h                            ; 0D5h
+0127   00BB           00381                         movwf           C_BASE_PWM_L
+0128   3000           00382                         movlw           000h
+0129   00BC           00383                         movwf           C_INI_PWM1_H
+012A   3000           00384                         movlw           000h
+012B   00BD           00385                         movwf           C_INI_PWM1_L
+012C   3000           00386                         movlw           000h
+012D   00BE           00387                         movwf           C_INI_PWM2_H
+012E   3000           00388                         movlw           000h
+012F   00BF           00389                         movwf           C_INI_PWM2_L
+0130   3003           00390                         movlw           03h
+0131   00C7           00391                         movwf           C_VLRMIN_CCP1_H
+0132   30E8           00392                         movlw           0E8h
+0133   00C8           00393                         movwf           C_VLRMIN_CCP1_L
+0134   3003           00394                         movlw           03h
+0135   00C9           00395                         movwf           C_VLRMIN_CCP2_H
+0136   30E8           00396                         movlw           0E8h
+0137   00CA           00397                         movwf           C_VLRMIN_CCP2_L
+0138   0008           00398                         return
+                      00399 
+0139   01A9           00400 CONF_RX         clrf            RX_INICIADA                     ; Iniciar variable
+013A   1683           00401                         BANCO1
+MPASM  5.02                        PWM_V2.ASM   11-22-2014  20:26:28         PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+013B   3019           00402                         movlw           .25                                     ; Comunicacion a 9600bps
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+013C   0099           00403                         movwf           SPBRG
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+013D   1218           00404                         bcf                     TXSTA, SYNC                     ; Habilitar comunicacion
+                             asincrona
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+013E   1518           00405                         bsf                     TXSTA, BRGH                     ; Habilitar seleccion de
+                             alta velocidad
+013F   1283           00406                         BANCO0
+0140   1798           00407                         bsf                     RCSTA, SPEN                     ; Habilitar puerto seria
+                            l
+0141   1318           00408                         bcf                     RCSTA, RX9                      ; Deshabilitar recepcion
+                             de 9 bits
+0142   1618           00409                         bsf                     RCSTA, CREN                     ; Habilitar el modulo de
+                             recepcion
+0143   170B           00410                         bsf                     INTCON, PEIE            ; Habilitar la interrupcion por 
+                            eventos perifericos
+0144   1683           00411                         BANCO1
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0145   168C           00412                         bsf                     PIE1, RCIE                      ; Habilitar la interrupc
+                            ion por recepcion de USAR
+0146   1283           00413                         BANCO0
+0147   128C           00414                         bcf                     PIR1, RCIF                      ; Limpiar la bandera de 
+                            interrupcion por recepcion de USAR
+0148   0008           00415                         return
+                      00416 
+0149   2157           00417 CFG_CCP         call            VLR_INI_CCP1
+014A   2173           00418                         call            SET_CCP1                        ; Configurar valor de control de
+                             CCP1
+014B   2165           00419                         call            VLR_INI_CCP2
+014C   2178           00420                         call            SET_CCP2                        ; Configurar valor de control de
+                             CCP2
+014D   1683           00421                         BANCO1
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+014E   150C           00422                         bsf                     PIE1, CCP1IE            ; Habilitar interrupcion por CCP
+                            1 - PIR1<CCP1IF>
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+014F   140D           00423                         bsf                     PIE2, CCP2IE            ; Habilitar interrupcion por CCP
+                            2 - PIR2<CCP2IF>
+0150   1283           00424                         BANCO0
+0151   300A           00425                         movlw           b'00001010'                     ; Configuracion CCP1
+0152   0097           00426                         movwf           CCP1CON
+0153   300A           00427                         movlw           b'00001010'                     ; Configuracion CCP2
+0154   009D           00428                         movwf           CCP2CON
+0155   170B           00429                         bsf                     INTCON, PEIE
+0156   0008           00430                         return
+                      00431 
+0157   083A           00432 VLR_INI_CCP1 movf               C_BASE_PWM_H, W
+0158   00B4           00433                         movwf           DATO1_1H
+0159   083B           00434                         movf            C_BASE_PWM_L, W
+015A   00B5           00435                         movwf           DATO1_1L
+015B   083C           00436                         movf            C_INI_PWM1_H, W
+MPASM  5.02                        PWM_V2.ASM   11-22-2014  20:26:28         PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+015C   00B6           00437                         movwf           DATO2_1H
+015D   083D           00438                         movf            C_INI_PWM1_L, W
+015E   00B7           00439                         movwf           DATO2_1L
+015F   2196           00440                         call            SUMA16                          ; Sumar la cifra base de control
+                             PWM al valor inicial de ancho de pulso 1 programado
+0160   0838           00441                         movf            RESP1H, W
+0161   00A5           00442                         movwf           C_CCP1H
+0162   0839           00443                         movf            RESP1L, W
+0163   00A6           00444                         movwf           C_CCP1L
+0164   0008           00445                         return
+                      00446 
+0165   083A           00447 VLR_INI_CCP2 movf               C_BASE_PWM_H, W
+0166   00B4           00448                         movwf           DATO1_1H
+0167   083B           00449                         movf            C_BASE_PWM_L, W
+0168   00B5           00450                         movwf           DATO1_1L
+0169   083E           00451                         movf            C_INI_PWM2_H, W
+016A   00B6           00452                         movwf           DATO2_1H
+016B   083F           00453                         movf            C_INI_PWM2_L, W
+016C   00B7           00454                         movwf           DATO2_1L
+016D   2196           00455                         call            SUMA16                          ; Sumar la cifra base de control
+                             PWM al valor inicial de ancho de pulso 2 programado
+016E   0838           00456                         movf            RESP1H, W
+016F   00A7           00457                         movwf           C_CCP2H
+0170   0839           00458                         movf            RESP1L, W
+0171   00A8           00459                         movwf           C_CCP2L
+0172   0008           00460                         return
+                      00461 
+0173   0826           00462 SET_CCP1        movf            C_CCP1L, W
+0174   0095           00463                         movwf           CCPR1L
+0175   0825           00464                         movf            C_CCP1H, W
+0176   0096           00465                         movwf           CCPR1H
+0177   0008           00466                         return
+                      00467 
+0178   0828           00468 SET_CCP2        movf            C_CCP2L, W
+0179   009B           00469                         movwf           CCPR2L
+017A   0827           00470                         movf            C_CCP2H, W
+017B   009C           00471                         movwf           CCPR2H
+017C   0008           00472                         return
+                      00473 
+017D   30D8           00474 CFG_TMR1        movlw           0D8h
+017E   00A3           00475                         movwf           C_TMR1H
+017F   30F0           00476                         movlw           0F0h
+0180   00A4           00477                         movwf           C_TMR1L
+0181   218F           00478                         call            SET_TMR1
+0182   1290           00479                         bcf                     T1CON, T1CKPS1          ; Preescala de 1
+0183   1210           00480                         bcf                     T1CON, T1CKPS0          ; Preescala de 1
+0184   1090           00481                         bcf                     T1CON, TMR1CS           ; Fuente de reloj interna
+0185   1683           00482                         BANCO1
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0186   140C           00483                         bsf                     PIE1, TMR1IE            ; Habilitar interrupcion por TMR
+                            1 - TMR1IF
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0187   1006           00484                         bcf                     TRISB, 0                        ; Pin RB0 en modo salida
+MPASM  5.02                        PWM_V2.ASM   11-22-2014  20:26:28         PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0188   1086           00485                         bcf                     TRISB, 1                        ; Pin RB1 en modo salida
+0189   1283           00486                         BANCO0
+018A   170B           00487                         bsf                     INTCON, PEIE            ; Habilitar interrupcion por per
+                            ifericos
+018B   3003           00488                         movlw           b'00000011'
+018C   0086           00489                         movwf           PORTB
+018D   1410           00490                         bsf                     T1CON,TMR1ON            ; Habilitar TMR1
+018E   0008           00491                         return
+                      00492 
+018F   0824           00493 SET_TMR1        movf            C_TMR1L, W
+0190   008E           00494                         movwf           TMR1L
+0191   0823           00495                         movf            C_TMR1H, W
+0192   008F           00496                         movwf           TMR1H
+0193   0008           00497                         return
+                      00498 
+0194   0000           00499 CICLO           nop
+0195   2994           00500                         goto            CICLO
+                      00501 
+                      00502 ; ******************************************************
+                      00503 ;                                       FUNCIONES DE APOYO
+                      00504 ; ******************************************************
+                      00505 
+                      00506 ;******************************
+                      00507 ;       SUMA EN 16 BITS
+                      00508 ;******************************
+0196   0835           00509 SUMA16          movf            DATO1_1L, W
+0197   0737           00510                         addwf           DATO2_1L, W
+0198   00B9           00511                         movwf           RESP1L
+0199   1803           00512                         btfsc           STATUS, C
+019A   299F           00513                         goto            ETI1
+019B   0834           00514                         movf            DATO1_1H, W
+019C   0736           00515 ETI2            addwf           DATO2_1H, W
+019D   00B8           00516                         movwf           RESP1H
+019E   0008           00517                         return
+                      00518 
+019F   0A34           00519 ETI1            incf            DATO1_1H,W
+01A0   299C           00520                         goto            ETI2
+                      00521 
+                      00522 ;******************************
+                      00523 ;       RESTA EN 16 BITS
+                      00524 ;******************************
+01A1   0837           00525 RESTA16         movf            DATO2_1L, W
+01A2   0235           00526                         subwf           DATO1_1L, W
+01A3   00B9           00527                         movwf           RESP1L
+01A4   1C03           00528                         btfss           STATUS, C
+01A5   29AA           00529                         goto            ETI9
+01A6   0836           00530                         movf            DATO2_1H, W
+01A7   0234           00531 ETI10           subwf           DATO1_1H, W
+01A8   00B8           00532                         movwf           RESP1H
+01A9   0008           00533                         return
+                      00534 
+01AA   0A36           00535 ETI9            incf            DATO2_1H, W
+MPASM  5.02                        PWM_V2.ASM   11-22-2014  20:26:28         PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+01AB   29A7           00536                         goto            ETI10
+                      00537 
+                      00538                         end
+MPASM  5.02                        PWM_V2.ASM   11-22-2014  20:26:28         PAGE 14
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ACKDT                             00000005
+ACKEN                             00000004
+ACKSTAT                           00000006
+ACK_CMD1                          000000EF
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000006
+ADCS1                             00000007
+ADCS2                             00000006
+ADDEN                             00000003
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+BANCO0                            bcf               STATUS, RP0
+BANCO1                            bsf               STATUS, RP0
+BCLIE                             00000003
+BCLIF                             00000003
+BF                                00000000
+BRGH                              00000002
+C                                 00000000
+C1INV                             00000004
+C1OUT                             00000006
+C2INV                             00000005
+C2OUT                             00000007
+CCP1CON                           00000017
+CCP1H_MAX                         00000030
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1L_MIN                         00000031
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCP2CON                           0000001D
+CCP2H_MAX                         00000032
+CCP2IE                            00000000
+CCP2IF                            00000000
+CCP2L_MIN                         00000033
+CCP2M0                            00000000
+CCP2M1                            00000001
+CCP2M2                            00000002
+CCP2M3                            00000003
+CCP2X                             00000005
+CCP2Y                             00000004
+CCPR1H                            00000016
+CCPR1L                            00000015
+CCPR2H                            0000001C
+CCPR2L                            0000001B
+MPASM  5.02                        PWM_V2.ASM   11-22-2014  20:26:28         PAGE 15
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+CFG_CCP                           00000149
+CFG_TMR1                          0000017D
+CHS0                              00000003
+CHS1                              00000004
+CHS2                              00000005
+CICLO                             00000194
+CIS                               00000003
+CKE                               00000006
+CKP                               00000004
+CM0                               00000000
+CM1                               00000001
+CM2                               00000002
+CMB_CCP1                          000000C1
+CMB_CCP2                          000000FB
+CMCON                             0000009C
+CMDO_1                            000000BD
+CMDO_2                            00000097
+CMDO_3                            0000008A
+CMDO_4                            00000062
+CMIE                              00000006
+CMIF                              00000006
+CONF_CONST                        00000124
+CONF_RX                           00000139
+CONF_TX                           0000004B
+CONT_RX                           00000037
+CREN                              00000004
+CSRC                              00000007
+CVR0                              00000000
+CVR1                              00000001
+CVR2                              00000002
+CVR3                              00000003
+CVRCON                            0000009D
+CVREN                             00000007
+CVROE                             00000006
+CVRR                              00000005
+C_ANCHO_PWM                       00000021
+C_BASE_PWM_H                      0000003A
+C_BASE_PWM_L                      0000003B
+C_CCP1H                           00000025
+C_CCP1L                           00000026
+C_CCP2H                           00000027
+C_CCP2L                           00000028
+C_CICLO_PWM                       00000022
+C_INI_PWM1_H                      0000003C
+C_INI_PWM1_L                      0000003D
+C_INI_PWM2_H                      0000003E
+C_INI_PWM2_L                      0000003F
+C_PERIODO_PWM                     00000020
+C_TMR1H                           00000023
+C_TMR1L                           00000024
+C_VLRMIN_CCP1_H                   00000047
+C_VLRMIN_CCP1_L                   00000048
+C_VLRMIN_CCP2_H                   00000049
+MPASM  5.02                        PWM_V2.ASM   11-22-2014  20:26:28         PAGE 16
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+C_VLRMIN_CCP2_L                   0000004A
+C_VLRMIN_H                        0000004B
+C_VLRMIN_L                        0000004C
+D                                 00000005
+DATA_ADDRESS                      00000005
+DATO1_1H                          00000034
+DATO1_1L                          00000035
+DATO2_1H                          00000036
+DATO2_1L                          00000037
+DC                                00000001
+DES_TX                            00000020
+D_A                               00000005
+EEADR                             0000010D
+EEADRH                            0000010F
+EECON1                            0000018C
+EECON2                            0000018D
+EEDATA                            0000010C
+EEDATH                            0000010E
+EEIE                              00000004
+EEIF                              00000004
+EEPGD                             00000007
+EJEC_RX                           00000059
+ETI1                              0000019F
+ETI10                             000001A7
+ETI2                              0000019C
+ETI9                              000001AA
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+GCEN                              00000007
+GIE                               00000007
+GO                                00000002
+GO_DONE                           00000002
+I2C_DATA                          00000005
+I2C_READ                          00000002
+I2C_START                         00000003
+I2C_STOP                          00000004
+IBF                               00000007
+IBOV                              00000005
+INDF                              00000000
+INICIO                            0000011E
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+INT_CCP1                          00000116
+INT_CCP2                          00000113
+INT_RX                            0000002A
+INT_TMR1                          00000119
+INT_TX                            0000000F
+IRP                               00000007
+LIM_MOTOR1                        00000066
+LIM_MOTOR2                        00000078
+MPASM  5.02                        PWM_V2.ASM   11-22-2014  20:26:28         PAGE 17
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+NOT_A                             00000005
+NOT_ADDRESS                       00000005
+NOT_BO                            00000000
+NOT_BOR                           00000000
+NOT_DONE                          00000002
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_RC8                           00000006
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+NOT_TX8                           00000006
+NOT_W                             00000002
+NOT_WRITE                         00000002
+NUEVA_RX                          00000033
+OBF                               00000006
+OERR                              00000001
+OPTION_REG                        00000081
+P                                 00000004
+PCFG0                             00000000
+PCFG1                             00000001
+PCFG2                             00000002
+PCFG3                             00000003
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PEN                               00000002
+PIE1                              0000008C
+PIE2                              0000008D
+PIR1                              0000000C
+PIR2                              0000000D
+PORTA                             00000005
+PORTB                             00000006
+PORTC                             00000007
+PORTD                             00000008
+PORTE                             00000009
+POS_MOTOR1                        0000009B
+POS_MOTOR2                        000000B2
+PR2                               00000092
+PROC_RX                           0000002E
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+PSPIE                             00000007
+PSPIF                             00000007
+PSPMODE                           00000004
+R                                 00000002
+RBIE                              00000003
+RBIF                              00000000
+RC8_9                             00000006
+RC9                               00000006
+MPASM  5.02                        PWM_V2.ASM   11-22-2014  20:26:28         PAGE 18
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RCD8                              00000000
+RCEN                              00000003
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+RD                                00000000
+READ_WRITE                        00000002
+REG_TX                            00000053
+RESP1H                            00000038
+RESP1L                            00000039
+RESP_ERR_RX                       00000042
+RESP_POS                          000000A6
+RESTA16                           000001A1
+RES_ERR_POS                       000000D9
+RET_INT                           0000000E
+RET_PROC_RX                       00000032
+RET_PROC_TX                       0000001F
+RP0                               00000005
+RP1                               00000006
+RSEN                              00000001
+RX9                               00000006
+RX9D                              00000000
+RX_COM0                           0000002F
+RX_COM1                           0000002E
+RX_COM2                           0000002D
+RX_COM3                           0000002C
+RX_COM4                           0000002B
+RX_INICIADA                       00000029
+RX_TEMP                           0000002A
+R_W                               00000002
+S                                 00000003
+SEN                               00000000
+SET_CCP1                          00000173
+SET_CCP2                          00000178
+SET_TMR1                          0000018F
+SMP                               00000007
+SPBRG                             00000099
+SPEN                              00000007
+SREN                              00000005
+SSPADD                            00000093
+SSPBUF                            00000013
+SSPCON                            00000014
+SSPCON2                           00000091
+SSPEN                             00000005
+SSPIE                             00000003
+SSPIF                             00000003
+SSPM0                             00000000
+SSPM1                             00000001
+SSPM2                             00000002
+SSPM3                             00000003
+SSPOV                             00000006
+SSPSTAT                           00000094
+MPASM  5.02                        PWM_V2.ASM   11-22-2014  20:26:28         PAGE 19
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+STATUS                            00000003
+SUMA16                            00000196
+SYNC                              00000004
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1INSYNC                          00000002
+T1OSCEN                           00000003
+T1SYNC                            00000002
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TMR0                              00000001
+TMR0IE                            00000005
+TMR0IF                            00000002
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISB                             00000086
+TRISC                             00000087
+TRISD                             00000088
+TRISE                             00000089
+TRISE0                            00000000
+TRISE1                            00000001
+TRISE2                            00000002
+TRMT                              00000001
+TX8_9                             00000006
+TX9                               00000006
+TX9D                              00000000
+TXD8                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+TX_COM0                           00000046
+TX_COM1                           00000045
+MPASM  5.02                        PWM_V2.ASM   11-22-2014  20:26:28         PAGE 20
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TX_COM2                           00000044
+TX_COM3                           00000043
+TX_COM4                           00000042
+TX_INICIADA                       00000040
+TX_TEMP                           00000041
+UA                                00000001
+VER_LIM                           000000E3
+VLR_INI_CCP1                      00000157
+VLR_INI_CCP2                      00000165
+W                                 00000000
+WCOL                              00000007
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_CPD_OFF                          00003FFF
+_CPD_ON                           00003EFF
+_CP_ALL                           00001FFF
+_CP_OFF                           00003FFF
+_DEBUG_OFF                        00003FFF
+_DEBUG_ON                         000037FF
+_HS_OSC                           00003FFE
+_LP_OSC                           00003FFC
+_LVP_OFF                          00003F7F
+_LVP_ON                           00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_WRT_1FOURTH                      00003BFF
+_WRT_256                          00003DFF
+_WRT_HALF                         000039FF
+_WRT_OFF                          00003FFF
+_XT_OSC                           00003FFD
+__16F877A                         00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XX--XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+MPASM  5.02                        PWM_V2.ASM   11-22-2014  20:26:28         PAGE 21
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+0100 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0140 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0180 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXX---- ----------------
+2000 : -------X-------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   426
+Program Memory Words Free:  7766
+
+
+Errors   :     0
+Warnings :     3 reported,     0 suppressed
+Messages :    15 reported,     0 suppressed
+
+Error[173]  : Source file path exceeds 62 characters (C:\USERS\ADMINISTRATOR\DOCUMENTS\GITHUB\BOTDROID\ROBOT\MPLAB\PWM_V2.ASM)
