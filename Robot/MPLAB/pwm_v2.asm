@@ -33,8 +33,8 @@ cblock		20h
 			DATO2_1L						; Byte de menor peso de entrada 2 de operaciones aritmeticas
 			RESP1H							; Byte de mayor peso de resultado de operaciones aritmeticas
 			RESP1L							; Byte de menor peso de resultado de operaciones aritmeticas
-			C_BASE_PWM_H					; Base de configuracion PWM
-			C_BASE_PWM_L					; Base de configuracion PWM
+			C_BASE_PWM1_H					; Base de configuracion PWM
+			C_BASE_PWM1_L					; Base de configuracion PWM
 			C_INI_PWM1_H					; Valor inicial de posicion de motor 1
 			C_INI_PWM1_L					; Valor inicial de posicion de motor 1
 			C_INI_PWM2_H					; Valor inicial de posicion de motor 2
@@ -52,6 +52,8 @@ cblock		20h
 			C_VLRMIN_CCP2_L					; Byte de menorpeso de posicion maxima parametrizada del motor 2
 			C_VLRMIN_H
 			C_VLRMIN_L
+			C_BASE_PWM2_H					; Base de configuracion PWM
+			C_BASE_PWM2_L					; Base de configuracion PWM
 endc
 
 			org 00h
@@ -69,7 +71,18 @@ endc
 			call		INT_TX
 			btfsc		PIR1, RCIF
 			call		INT_RX
+			btfsc		INTCON, TMR0IF
+			call		INT_TMR0
 RET_INT		retfie
+
+INT_TMR0	btfss		INTCON, TMR0IE		; Interrupcion habilitada?
+			return							; No, retornar sin realizar accion alguna
+			call		CFG_TMR0_OFF		; Si, desactivar la interrupcion por TMR0
+			return
+
+CFG_TMR0_OFF bcf			INTCON, TMR0IE
+			bcf			PORTC, 5
+			return
 
 INT_TX		BANCO1
 			movf		PIE1, W
@@ -154,6 +167,7 @@ REG_TX		movlw		42h					; Transfiere el registro de envio para su transmision ser
 			return
 
 EJEC_RX		clrf		RX_INICIADA			; Reiniciar variable
+			call		CFG_TMR0_ON			; Indicador de comando recibido
 			bcf			PCLATH, 4
 			bcf			PCLATH, 3
 			decf		RX_COM3, W
@@ -162,6 +176,19 @@ EJEC_RX		clrf		RX_INICIADA			; Reiniciar variable
 			goto		CMDO_2				; Comando 2, solicitud de posicion de motor
 			goto		CMDO_3				; Comando 3, solicitud de reinicio
 			goto		CMDO_4				; Comando 4, calibracion de posicion de motor
+
+CFG_TMR0_ON	bsf			PORTC, 5
+			BANCO1
+			bcf			OPTION_REG, T0CS	; Fuente de temporizador 0 como reloj interno
+			bcf			OPTION_REG, PSA		; Preescala asognada a TMR0
+			bsf			OPTION_REG, PS2		; Presscala de 256 a TMR0
+			bsf			OPTION_REG, PS1
+			bsf			OPTION_REG, PS0
+			BANCO0
+			clrf		TMR0
+			bcf			INTCON, TMR0IF
+			bsf			INTCON, TMR0IE
+			return
 
 CMDO_4		decf		RX_COM2, W
 			addwf		PCL, F
@@ -211,7 +238,7 @@ CMDO_3		call		VLR_INI_CCP1
 			call		VLR_INI_CCP2
 			call		SET_CCP2
 			movlw		55h
-			movf		TX_COM4
+			movwf		TX_COM4
 			movlw		01h
 			movwf		TX_COM3
 			clrf		TX_COM2
@@ -229,9 +256,9 @@ POS_MOTOR1	movf		C_CCP1H, W			; Calcular el valor del ancho de pulso en relacion
 			movwf		DATO1_1H
 			movf		C_CCP1L, W
 			movwf		DATO1_1L
-			movf		C_BASE_PWM_H, W
+			movf		C_BASE_PWM1_H, W
 			movwf		DATO2_1H
-			movf		C_BASE_PWM_L, W
+			movf		C_BASE_PWM1_L, W
 			movwf		DATO2_1L
 			call		RESTA16				; Restar la cifra base de control PWM del valor parametrizado para el ancho de pulso
 			call		RESP_POS			; Enviar respuesta de posicion
@@ -254,9 +281,9 @@ POS_MOTOR2	movf		C_CCP2H, W			; Calcular el valor del ancho de pulso en relacion
 			movwf		DATO1_1H
 			movf		C_CCP2L, W
 			movwf		DATO1_1L
-			movf		C_BASE_PWM_H, W
+			movf		C_BASE_PWM2_H, W
 			movwf		DATO2_1H
-			movf		C_BASE_PWM_L, W
+			movf		C_BASE_PWM2_L, W
 			movwf		DATO2_1L
 			call		RESTA16				; Restar la cifra base de control PWM del valor parametrizado para el ancho de pulso
 			call		RESP_POS			; Enviar respuesta de posicion
@@ -275,9 +302,9 @@ CMB_CCP1	movf		C_VLRMIN_CCP1_H, W
 			xorlw		00h					; Valor invalido de posicion?
 			btfsc		STATUS, Z
 			goto		RES_ERR_POS
-			movf		C_BASE_PWM_H, W
+			movf		C_BASE_PWM1_H, W
 			movwf		DATO1_1H
-			movf		C_BASE_PWM_L, W
+			movf		C_BASE_PWM1_L, W
 			movwf		DATO1_1L
 			movf		RX_COM1, W
 			movwf		DATO2_1H
@@ -337,9 +364,9 @@ CMB_CCP2	movf		C_VLRMIN_CCP2_H, W
 			xorlw		00h					; Valor invalido de posicion?
 			btfsc		STATUS, Z
 			goto		RES_ERR_POS
-			movf		C_BASE_PWM_H, W
+			movf		C_BASE_PWM2_H, W
 			movwf		DATO1_1H
-			movf		C_BASE_PWM_L, W
+			movf		C_BASE_PWM2_L, W
 			movwf		DATO1_1L
 			movf		RX_COM1, W
 			movwf		DATO2_1H
@@ -375,10 +402,14 @@ INICIO		call		CONF_CONST
 			bsf			INTCON, GIE			; Habilitar las interrupciones
 			call		CICLO
 
-CONF_CONST	movlw		0DCh				; Configuracion inicial de constantes - 0DCh
-			movwf		C_BASE_PWM_H
-			movlw		0D5h				; 0D5h
-			movwf		C_BASE_PWM_L
+CONF_CONST	movlw		0B5h				; Configuracion inicial de constantes - 0B4h - Motor brazo
+			movwf		C_BASE_PWM1_H
+			movlw		000h				; 09Ch
+			movwf		C_BASE_PWM1_L
+			movlw		0B4h				; Configuracion inicial de constantes - 0B4h - Motor pinza
+			movwf		C_BASE_PWM2_H
+			movlw		09Ch				; 09Ch
+			movwf		C_BASE_PWM2_L
 			movlw		000h
 			movwf		C_INI_PWM1_H
 			movlw		000h
@@ -387,19 +418,23 @@ CONF_CONST	movlw		0DCh				; Configuracion inicial de constantes - 0DCh
 			movwf		C_INI_PWM2_H
 			movlw		000h
 			movwf		C_INI_PWM2_L
-			movlw		03h
+			movlw		05h					; 05h
 			movwf		C_VLRMIN_CCP1_H
-			movlw		0E8h
+			movlw		078h				; 078h
 			movwf		C_VLRMIN_CCP1_L
-			movlw		03h
+			movlw		06h					; 06h
 			movwf		C_VLRMIN_CCP2_H
-			movlw		0E8h
+			movlw		040h				; 040h
 			movwf		C_VLRMIN_CCP2_L
+			BANCO1
+			bcf			TRISC, 5
+			BANCO0
+			bcf			PORTC, 5
 			return
 
 CONF_RX		clrf		RX_INICIADA			; Iniciar variable
 			BANCO1
-			movlw		.25					; Comunicacion a 9600bps
+			movlw		.25				; Comunicacion a 9600bps
 			movwf		SPBRG
 			bcf			TXSTA, SYNC			; Habilitar comunicacion asincrona
 			bsf			TXSTA, BRGH			; Habilitar seleccion de alta velocidad
@@ -429,9 +464,9 @@ CFG_CCP		call		VLR_INI_CCP1
 			bsf			INTCON, PEIE
 			return
 
-VLR_INI_CCP1 movf		C_BASE_PWM_H, W
+VLR_INI_CCP1 movf		C_BASE_PWM1_H, W
 			movwf		DATO1_1H
-			movf		C_BASE_PWM_L, W
+			movf		C_BASE_PWM1_L, W
 			movwf		DATO1_1L
 			movf		C_INI_PWM1_H, W
 			movwf		DATO2_1H
@@ -444,9 +479,9 @@ VLR_INI_CCP1 movf		C_BASE_PWM_H, W
 			movwf		C_CCP1L
 			return
 
-VLR_INI_CCP2 movf		C_BASE_PWM_H, W
+VLR_INI_CCP2 movf		C_BASE_PWM2_H, W
 			movwf		DATO1_1H
-			movf		C_BASE_PWM_L, W
+			movf		C_BASE_PWM2_L, W
 			movwf		DATO1_1L
 			movf		C_INI_PWM2_H, W
 			movwf		DATO2_1H
@@ -471,9 +506,9 @@ SET_CCP2	movf		C_CCP2L, W
 			movwf		CCPR2H
 			return
 
-CFG_TMR1  	movlw		0D8h
+CFG_TMR1  	movlw		0B1h
 			movwf		C_TMR1H
-			movlw		0F0h
+			movlw		0E0h
 			movwf		C_TMR1L
 			call		SET_TMR1
 			bcf			T1CON, T1CKPS1		; Preescala de 1
